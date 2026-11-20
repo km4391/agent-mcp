@@ -1,0 +1,4 @@
+mcp-config.json
+__pycache__/
+*.pyc
+.venv/

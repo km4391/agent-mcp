@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="agent-mcp logo: a switchblade sheathed inside an art-deco shield">
+  <defs>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4ead5"/>
+      <stop offset=".55" stop-color="#cfc4ad"/>
+      <stop offset="1" stop-color="#8d8472"/>
+    </linearGradient>
+    <linearGradient id="grip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c8102e"/>
+      <stop offset="1" stop-color="#6e0718"/>
+    </linearGradient>
+  </defs>
+  <!-- deco sunburst -->
+  <g stroke="#c8a24a" stroke-width="1.2" opacity=".55">
+    <line x1="120" y1="120" x2="120" y2="8"/><line x1="120" y1="120" x2="176" y2="23"/>
+    <line x1="120" y1="120" x2="217" y2="64"/><line x1="120" y1="120" x2="232" y2="120"/>
+    <line x1="120" y1="120" x2="64" y2="23"/><line x1="120" y1="120" x2="23" y2="64"/>
+    <line x1="120" y1="120" x2="8" y2="120"/>
+  </g>
+  <!-- shield -->
+  <path d="M120 22 L196 48 V112 C196 166 162 200 120 220 C78 200 44 166 44 112 V48 Z"
+        fill="#0d0b0a" stroke="#c8a24a" stroke-width="5"/>
+  <path d="M120 36 L182 57 V112 C182 158 154 188 120 205 C86 188 58 158 58 112 V57 Z"
+        fill="none" stroke="#c8a24a" stroke-width="1.5" opacity=".8"/>
+  <!-- switchblade, diagonal -->
+  <g transform="rotate(-45 120 120)">
+    <path d="M120 38 L131 60 L131 116 L109 116 L109 60 Z" fill="url(#blade)" stroke="#0d0b0a" stroke-width="2"/>
+    <line x1="120" y1="46" x2="120" y2="112" stroke="#8d8472" stroke-width="1.5"/>
+    <rect x="100" y="116" width="40" height="9" rx="2" fill="#c8a24a"/>
+    <rect x="108" y="125" width="24" height="68" rx="9" fill="url(#grip)" stroke="#0d0b0a" stroke-width="2"/>
+    <circle cx="120" cy="140" r="3.2" fill="#c8a24a"/>
+    <circle cx="120" cy="178" r="3.2" fill="#c8a24a"/>
+  </g>
+  <!-- terminal prompt -->
+  <text x="120" y="190" text-anchor="middle" font-family="IBM Plex Mono, Menlo, monospace"
+        font-size="20" font-weight="700" fill="#f4ead5">&gt;_</text>
+</svg>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>agent-mcp · a sandbox with teeth</title>
+<meta name="description" content="A hardened terminal and file MCP server for macOS. The kernel fences off the dangerous parts. Your model doesn't have to behave.">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Limelight&family=Bodoni+Moda:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0d0b0a; --smoke:#1a1614; --cream:#f4ead5; --dim:#b9ad94;
+    --blood:#c8102e; --brass:#c8a24a; --line:rgba(200,162,74,.35);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ink);color:var(--cream);font:18px/1.6 "Bodoni Moda",Georgia,serif;
+    background-image:
+      radial-gradient(ellipse at 50% -10%,rgba(200,16,46,.28),transparent 60%),
+      repeating-linear-gradient(90deg,transparent 0 79px,rgba(200,162,74,.05) 79px 80px);}
+  a{color:var(--brass)}
+  code,pre,.mono{font-family:"IBM Plex Mono",Menlo,monospace}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+
+  /* marquee bar */
+  .marquee{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;font:600 12px/32px "IBM Plex Mono",monospace;
+    letter-spacing:.3em;text-transform:uppercase;color:var(--brass)}
+  .marquee span{display:inline-block;animation:roll 38s linear infinite;padding-left:100%}
+  @keyframes roll{to{transform:translateX(-100%)}}
+
+  /* hero */
+  header.hero{text-align:center;padding:72px 0 56px;position:relative}
+  .logo{width:210px;height:210px;filter:drop-shadow(0 0 40px rgba(200,16,46,.45));animation:glint 6s ease-in-out infinite}
+  @keyframes glint{0%,100%{filter:drop-shadow(0 0 30px rgba(200,16,46,.35))}50%{filter:drop-shadow(0 0 60px rgba(200,162,74,.55))}}
+  .billing{font:600 13px "IBM Plex Mono",monospace;letter-spacing:.45em;color:var(--dim);text-transform:uppercase;margin-top:20px}
+  h1{font-family:Limelight,serif;font-weight:400;font-size:clamp(56px,11vw,128px);line-height:.95;margin:12px 0 8px;
+    letter-spacing:.02em;color:var(--cream);text-shadow:4px 4px 0 var(--blood)}
+  .tag{font-style:italic;font-size:clamp(20px,3vw,28px);color:var(--dim);margin:0 auto;max-width:720px}
+  .tag b{color:var(--blood);font-style:normal}
+  .rule{display:flex;align-items:center;gap:14px;justify-content:center;margin:34px auto;color:var(--brass)}
+  .rule:before,.rule:after{content:"";height:1px;width:120px;background:linear-gradient(90deg,transparent,var(--brass),transparent)}
+  .cta{display:inline-block;margin:6px 8px;padding:14px 28px;border:2px solid var(--brass);color:var(--cream);text-decoration:none;
+    font:600 14px "IBM Plex Mono",monospace;letter-spacing:.2em;text-transform:uppercase;transition:.2s}
+  .cta.red{background:var(--blood);border-color:var(--blood)}
+  .cta:hover{transform:translateY(-2px);box-shadow:6px 6px 0 var(--brass)}
+
+  /* acts */
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  .act{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.5em;color:var(--blood);text-transform:uppercase}
+  h2{font-family:Limelight,serif;font-weight:400;font-size:clamp(34px,5vw,52px);margin:6px 0 18px;line-height:1.05}
+  p.lede{font-size:21px;color:var(--dim);max-width:760px}
+
+  pre{background:var(--smoke);border:1px solid var(--line);border-left:4px solid var(--blood);padding:18px 20px;overflow:auto;
+    font-size:14px;line-height:1.5;color:var(--cream)}
+  .diagram{font-size:12.5px;color:var(--brass)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:24px}
+  .card{background:linear-gradient(180deg,var(--smoke),#120f0e);border:1px solid var(--line);padding:22px;position:relative}
+  .card:before{content:"";position:absolute;inset:6px;border:1px solid rgba(200,162,74,.15);pointer-events:none}
+  .card h3{font:600 13px "IBM Plex Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin:0 0 8px}
+  .card p{margin:0;font-size:16px;color:var(--dim)}
+  .card code{color:var(--cream);font-size:13px}
+
+  table{width:100%;border-collapse:collapse;margin-top:18px;font-size:16px}
+  th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+  td.by{color:var(--blood);font-weight:700;white-space:nowrap}
+  td.res{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--cream)}
+
+  .caveats li{margin:10px 0;color:var(--dim)}
+  .caveats b{color:var(--cream)}
+  .honest{margin-top:26px;padding:22px 26px;border:2px solid var(--blood);font-style:italic;font-size:20px}
+
+  .checks{columns:2 260px;font:14px/1.9 "IBM Plex Mono",monospace;color:var(--dim);padding:0;list-style:none}
+  .checks li:before{content:"✦ ";color:var(--blood)}
+
+  footer{border-top:1px solid var(--line);padding:40px 0 60px;text-align:center;color:var(--dim);font-size:15px}
+  footer .mono{letter-spacing:.3em;font-size:12px;color:var(--brass)}
+  @media (prefers-reduced-motion:reduce){.marquee span,.logo{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="marquee"><span>✦ Tonight only ✦ every night ✦ a terminal for your local model ✦ writes: workspace only ✦ net: allowlist only ✦ secrets: unreadable ✦ AppleScript: denied ✦ audit log: kept where the agent can't reach ✦ enforced by the kernel, not by good manners ✦</span></div>
+
+<header class="hero wrap">
+  <img class="logo" src="logo.svg" alt="agent-mcp logo: a switchblade inside an art-deco shield">
+  <div class="billing">The kernel presents</div>
+  <h1>agent&#8209;mcp</h1>
+  <p class="tag">A hardened terminal &amp; file MCP server for macOS.<br>The model may smile. <b>The sandbox has the teeth.</b></p>
+  <div class="rule">✦</div>
+  <a class="cta red" href="#install">Install in 5 minutes</a>
+  <a class="cta" href="https://github.com/km4391/agent-mcp">View on GitHub</a>
+</header>
+
+<main class="wrap">
+
+<section>
+  <div class="act">Act I · The Setup</div>
+  <h2>Give a local agent a shell. Keep your Mac.</h2>
+  <p class="lede">LM Studio, Claude Desktop, Cursor, Cline, Goose: anything that speaks MCP gets a terminal and file tools.
+  The dangerous parts are fenced off <em>by the operating system</em>, not by hoping the model behaves.</p>
+<pre class="diagram">┌──────────────┐  stdio/MCP  ┌──────────────────────┐  sandbox-exec  ┌────────────────────────┐
+│  AI client   │────────────▶│  agent_mcp_server.py │───────────────▶│  zsh -c "&lt;command&gt;"    │
+│ (LM Studio…) │◀────────────│  file tools · audit  │                │  writes: workspace only│
+└──────────────┘             │  allowlist proxy ◀───┼────────────────┤  net: proxy only       │
+                             └──────────┬───────────┘                └────────────────────────┘
+                                        ▼ only pypi / npm / github / … (your allowlist)</pre>
+</section>
+
+<section id="install">
+  <div class="act">Act II · The Entrance</div>
+  <h2>Install</h2>
+  <p class="lede">The installer builds a venv, installs the MCP SDK, runs the <b>doctor</b> to prove the sandbox is enforcing on
+  <em>your</em> Mac, then writes <code>mcp-config.json</code> for your client. Needs Python 3.10+.</p>
+<pre>git clone https://github.com/km4391/agent-mcp ~/agent-mcp
+cd ~/agent-mcp &amp;&amp; ./install.sh</pre>
+  <p>Then paste into your client's MCP config, restart it, and ask the model to call <code>agent_info</code>:</p>
+<pre>{ "mcpServers": { "agent-mcp": {
+    "command": "/Users/YOU/.agent-mcp/bin/python",
+    "args": ["/Users/YOU/agent-mcp/agent_mcp_server.py"],
+    "env": { "AGENT_WORKSPACE": "/Users/YOU/AgentWorkspace" } } } }</pre>
+</section>
+
+<section>
+  <div class="act">Act III · The Repertoire</div>
+  <h2>Twenty tools, one stage</h2>
+  <div class="grid">
+    <div class="card"><h3>Terminal</h3><p><code>run_command</code>. On timeout it keeps running in the background.</p></div>
+    <div class="card"><h3>Long-running</h3><p><code>start_process</code>, <code>read_output</code> with a <code>wait_for</code> regex, <code>send_input</code>, <code>kill_process</code>, <code>list_processes</code>.</p></div>
+    <div class="card"><h3>Code</h3><p><code>run_code</code> for Python, Node or shell snippets.</p></div>
+    <div class="card"><h3>Files</h3><p>Paged <code>read_file</code>, <code>write_file</code>, <code>list_directory</code> trees, <code>move_path</code>, <code>get_file_info</code>.</p></div>
+    <div class="card"><h3>Edit</h3><p><code>edit_block</code>: exact search/replace, occurrence check, closest-match hint, unified diff back.</p></div>
+    <div class="card"><h3>Search</h3><p><code>search_files</code> by name, <code>search_code</code> by regex, using ripgrep when present.</p></div>
+    <div class="card"><h3>Delete</h3><p><code>delete_path</code> moves to <code>.trash/</code>. Nothing is destroyed.</p></div>
+    <div class="card"><h3>Web</h3><p><code>fetch_url</code>, allowlisted hosts only.</p></div>
+  </div>
+  <p style="margin-top:24px;color:var(--dim)"><b style="color:var(--blood)">Not on the bill:</b> <code>set_config</code>.
+  The policy is fixed at launch by environment variables. No tool can loosen it from inside.</p>
+</section>
+
+<section>
+  <div class="act">Act IV · The Teeth</div>
+  <h2>What's enforced, and by whom</h2>
+  <table>
+    <tr><th>Threat</th><th>Enforced by</th><th>Result</th></tr>
+    <tr><td>Write or delete outside the workspace (<code>rm -rf ~</code>, <code>~/.zshrc</code>, LaunchAgents)</td><td class="by">Kernel (Seatbelt)</td><td class="res">Operation not permitted</td></tr>
+    <tr><td>Read secrets: <code>~/.ssh</code>, <code>~/.aws</code>, keychains, cookies, Mail, Documents, Desktop, Downloads</td><td class="by">Kernel</td><td class="res">unreadable</td></tr>
+    <tr><td>Exfiltrate to an arbitrary server, DNS tunnelling, raw sockets</td><td class="by">Kernel + proxy allowlist</td><td class="res">refused / 403 Blocked</td></tr>
+    <tr><td>Bypass the proxy (<code>--noproxy</code>, Python sockets, <code>nc</code>)</td><td class="by">Kernel</td><td class="res">Operation not permitted</td></tr>
+    <tr><td>AppleScript, Shortcuts, <code>open</code>, <code>launchctl</code>, <code>security</code>, <code>sudo</code></td><td class="by">Kernel (exec denied)</td><td class="res">cannot execute</td></tr>
+    <tr><td>Steal API keys from the host app's environment</td><td class="by">Env scrubbing</td><td class="res">not present</td></tr>
+    <tr><td>Tokens leaking back into the chat</td><td class="by">Redaction</td><td class="res">[REDACTED]</td></tr>
+    <tr><td>"What did it do while I was away?"</td><td class="by">Audit log</td><td class="res">JSONL outside the sandbox</td></tr>
+    <tr><td>Runaway processes, output floods</td><td class="by">Limits</td><td class="res">16 procs · 2 MiB · 30k chars</td></tr>
+  </table>
+</section>
+
+<section>
+  <div class="act">Act V · The Confession</div>
+  <h2>What it does <em>not</em> cover</h2>
+  <ul class="caveats">
+    <li><b>GitHub is on the default allowlist, and <code>git push</code> can exfiltrate.</b> Keep secrets out of the workspace, or drop it with <code>AGENT_NET_ALLOW_ONLY</code>.</li>
+    <li><b>Localhost is reachable by default</b> so the agent can reach Ollama. A local proxy or VPN client would bypass the allowlist. Set <code>AGENT_ALLOW_LOCALHOST=0</code> if you don't need it.</li>
+    <li><b>The workspace is fully exposed.</b> Treat it like a shared folder with a very fast, occasionally confused intern.</li>
+    <li><b>File tools run in the server process</b>, confined by path validation (symlinks resolved, tested), not by the kernel.</li>
+    <li><b>Resource exhaustion</b> is bounded, not prevented.</li>
+    <li><b><code>sandbox-exec</code> is deprecated by Apple.</b> It still works through macOS 26. The server refuses to start without it rather than run unsandboxed.</li>
+    <li><b>Prompt injection is still the main risk.</b> The sandbox limits the blast radius. Keep your client's per-call approval on.</li>
+  </ul>
+  <div class="honest">Hardened against the common ways a local agent harms a machine: the home-folder wipe, the credential theft,
+  the "curl everything to pastebin", the AppleScript takeover. It is not a VM.</div>
+</section>
+
+<section>
+  <div class="act">Act VI · The Alibi</div>
+  <h2>The doctor</h2>
+  <p class="lede">About 16 checks, run <em>through the real sandbox</em>. Re-run after any macOS update.</p>
+<pre>~/.agent-mcp/bin/python agent_mcp_server.py doctor</pre>
+  <ul class="checks">
+    <li>profile compiles</li><li>shell, python, node work</li><li>workspace writes succeed</li><li>outside writes fail</li>
+    <li>~/Library unreadable</li><li>~/.ssh unreadable</li><li>osascript / open can't run</li><li>direct network refused</li>
+    <li>pypi.org works via proxy</li><li>example.com returns 403</li><li>pip install into a venv works</li><li>"All required checks passed"</li>
+  </ul>
+</section>
+
+<section>
+  <div class="act">Act VII · The Fine Print</div>
+  <h2>Configuration</h2>
+  <table>
+    <tr><th>Variable</th><th>Default</th><th>Meaning</th></tr>
+    <tr><td class="res">AGENT_WORKSPACE</td><td>~/AgentWorkspace</td><td>The only writable folder.</td></tr>
+    <tr><td class="res">AGENT_SANDBOX</td><td>seatbelt</td><td><code>off</code> is for Linux development only.</td></tr>
+    <tr><td class="res">AGENT_NET_ALLOW</td><td>–</td><td>Extra hosts; <code>*.example.com</code> wildcards.</td></tr>
+    <tr><td class="res">AGENT_NET_ALLOW_ONLY</td><td>–</td><td>Replace the default list entirely.</td></tr>
+    <tr><td class="res">AGENT_NET_OFF</td><td>0</td><td><code>1</code> = no network at all.</td></tr>
+    <tr><td class="res">AGENT_ALLOW_LOCALHOST</td><td>1</td><td>Outbound to <code>localhost:*</code>.</td></tr>
+    <tr><td class="res">AGENT_EXTRA_READ / _WRITE</td><td>–</td><td>Extra folders. Never set to <code>~</code>.</td></tr>
+    <tr><td class="res">AGENT_PASS_ENV</td><td>–</td><td>Env var names to pass through.</td></tr>
+    <tr><td class="res">AGENT_TIMEOUT</td><td>60</td><td><code>run_command</code> timeout, max 1800 s.</td></tr>
+    <tr><td class="res">AGENT_LOG_DIR</td><td>~/Library/Logs/agent-mcp</td><td>Audit log location.</td></tr>
+  </table>
+  <p style="color:var(--dim);margin-top:18px">Default allowlist: PyPI, npm, Yarn, GitHub, crates.io, Go proxy, Homebrew formulae, Hugging Face.</p>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <div class="mono">✦ Single file · no dependencies beyond <code>mcp</code> · 65 tests ✦</div>
+  <p><a href="https://github.com/km4391/agent-mcp">github.com/km4391/agent-mcp</a> · full details in the README</p>
+</footer>
+
+</body>
+</html>

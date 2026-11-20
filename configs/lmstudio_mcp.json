@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "agent-mcp": {
+      "command": "/Users/YOUR_USERNAME/.agent-mcp/bin/python",
+      "args": ["/Users/YOUR_USERNAME/agent-mcp/agent_mcp_server.py"],
+      "env": {
+        "AGENT_WORKSPACE": "/Users/YOUR_USERNAME/AgentWorkspace"
+      }
+    }
+  }
+}
