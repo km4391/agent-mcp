@@ -158,3 +158,7 @@ python3 agent_mcp_server.py print-profile      # the generated Seatbelt profile
 
 The test suite runs on Linux/macOS with the sandbox off; Seatbelt enforcement is validated by `doctor` on a real Mac.
 Single file, no dependencies beyond `mcp` (SDK 1.x and 2.x both supported).
+
+## License
+
+Proprietary, source-available. **Not free to use.** You may read the code, but running, copying, modifying or redistributing it needs a paid written license. See [LICENSE](LICENSE); to ask for one, [open an issue](https://github.com/km4391/agent-mcp/issues).
